@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ComTesta — Dashboard Epistemológico</title>
+  <meta name="description" content="Visualize a resposta estruturada do agente ComTesta em um dashboard de coerência epistemológica.">
+  <link rel="stylesheet" href="/assets/site.css?v=5">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body id="topo">
+  <header class="site-header">
+    <div class="container">
+      <a href="/index.html#inicio" class="logo" aria-label="Voltar à página inicial">
+        <img src="/comtesta.png" alt="ComTesta" class="logo-image" loading="eager" decoding="async">
+      </a>
+      <nav id="site-navigation" class="main-nav">
+        <ul>
+          <li><a href="/index.html#inicio">Início</a></li>
+          <li><a href="/index.html#importancia">Importância</a></li>
+          <li><a href="/index.html#caracteristicas">Características</a></li>
+          <li><a href="/index.html#agentes">Agentes</a></li>
+          <li><a href="/dashboard.html" class="active">Dashboard</a></li>
+        </ul>
+      </nav>
+      <img src="/botao.png" alt="Botão ComTesta" class="header-button-image" loading="eager" decoding="async">
+      <button class="mobile-nav-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-navigation">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <section class="dashboard-header">
+      <div class="container">
+        <h1>Dashboard de Coerência Epistemológica</h1>
+        <p>Análise automática gerada pelo agente ComTesta</p>
+      </div>
+    </section>
+
+    <section class="dashboard-results">
+      <div class="container">
+        <div class="dashboard-stage" data-dashboard-stage hidden>
+          <div class="dashboard-meta">
+            <span data-dashboard-status>Análise carregada automaticamente</span>
+            <div class="meta-actions">
+              <button class="btn btn-primary" data-download-dashboard>⬇ Download Dashboard</button>
+            </div>
+          </div>
+          <div class="dashboard-output" data-dashboard-output></div>
+          <div class="dashboard-disclaimer">
+            <p><strong>Nota importante:</strong> Esta análise refere-se à coerência do pensamento, não ao conteúdo ou aos resultados práticos das ações.</p>
+          </div>
+          <div class="dashboard-reset">
+            <button class="btn btn-danger" data-reset-dashboard>🔄 Nova Análise (Limpar Dados)</button>
+            <p class="reset-hint">Limpa todos os dados salvos e reinicia o processo para uma nova análise.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <a href="/agente.html" class="footer-cta">Voltar ao Agente</a>
+      <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--muted-color); opacity: 0.8;">ComTesta - versão 1.0. Copywriter. PVolker.2025</p>
+    </div>
+  </footer>
+
+  <a href="#topo" class="back-to-top" aria-label="Voltar ao topo">↑</a>
+
+  <script src="/assets/site.js?v=5" defer></script>
+  <script src="/assets/dashboard.js?v=7" defer></script>
+</body>
+</html>

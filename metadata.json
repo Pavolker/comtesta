@@ -1,0 +1,5 @@
+{
+  "name": "ComTesta - Agente Pensante de Feedback",
+  "description": "Static multi-page experience for ComTesta, incluindo landing page, agente Flowise incorporado e dashboard que interpreta a resposta final do agente para exibir métricas epistemológicas.",
+  "requestFramePermissions": []
+}

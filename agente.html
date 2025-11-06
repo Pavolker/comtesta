@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComTesta — Agente</title>
+  <meta name="description" content="Página do agente ComTesta com embed Flowise." />
+  <link rel="stylesheet" href="/assets/site.css?v=7">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/index.html#inicio" class="logo" aria-label="Voltar à página inicial">
+        <img src="/comtesta.png" alt="ComTesta" class="logo-image" loading="eager" decoding="async" />
+      </a>
+      <nav id="site-navigation" class="main-nav">
+        <ul>
+          <li><a href="/index.html#inicio">Início</a></li>
+          <li><a href="/index.html#importancia">Importância</a></li>
+          <li><a href="/index.html#caracteristicas">Características</a></li>
+          <li><a href="/index.html#agentes">Agentes</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+        </ul>
+      </nav>
+      <img src="/botao.png" alt="Botão ComTesta" class="header-button-image" loading="eager" decoding="async" />
+      <button class="mobile-nav-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-navigation">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="container">
+        <h1>Agente ComTesta</h1>
+        <p>Apresente a sua idéia, seu argumento, sua decisão ou a sua opinião. Escreva um pequeno parágrafo sobre o assunto</p>
+        <p style="font-size: 0.9rem; color: var(--muted-color); margin-top: 1rem; font-style: italic;">Para limpar a conversa, clique nas setas circulares à direita da tela do agente, na faixa azul</p>
+      </div>
+    </section>
+  </main>
+
+  <section class="agent-embed">
+    <div class="container">
+      <flowise-fullchatbot></flowise-fullchatbot>
+      <div class="dashboard-actions">
+        <a href="/dashboard.html" class="btn btn-primary" id="dashboard-link">Ir para o Dashboard</a>
+        <small id="dashboard-hint" class="dashboard-hint">O dashboard será atualizado automaticamente com a resposta do agente.</small>
+      </div>
+    </div>
+  </section>
+  
+  <script type="module">
+    console.log('[Flowise] Iniciando carregamento do módulo...');
+
+    try {
+        const Chatbot = await import("https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js");
+        console.log('[Flowise] Módulo carregado com sucesso:', Chatbot);
+
+        if (Chatbot.default && typeof Chatbot.default.initFull === 'function') {
+            console.log('[Flowise] Inicializando chatbot em tela cheia...');
+            Chatbot.default.initFull({
+                chatflowid: "f0e1df59-39c3-410a-b101-3e7bc5a24389",
+                apiHost: "https://flowiseai-railway-production-eee5.up.railway.app",
+                theme: {
+                    chatWindow: {
+                        showTitle: true,
+                        title: "Agente ComTesta",
+                        welcomeMessage: "Olá! Apresente sua ideia, argumento ou decisão para análise epistemológica.",
+                        backgroundColor: "#ffffff",
+                    }
+                }
+            });
+            console.log('[Flowise] ✓ Chatbot em tela cheia inicializado');
+        } else {
+            console.error('[Flowise] ✗ Função initFull não encontrada no módulo');
+        }
+    } catch (error) {
+        console.error('[Flowise] ✗ Erro ao carregar módulo:', error);
+    }
+</script>
+  <script type="module">
+    // DEBUG: Ativar logs detalhados
+    const DEBUG = true;
+    const log = (...args) => DEBUG && console.log('[ComTesta]', ...args);
+
+    // Observa o componente e prepara o botão para abrir o dashboard
+    function extractLatestStructuredResponse(text) {
+      if (!text) {
+        log('extractLatestStructuredResponse: texto vazio');
+        return null;
+      }
+
+      log('Texto extraído (primeiros 200 chars):', text.substring(0, 200));
+
+      // Padrão melhorado: busca por [1] até [6] com conteúdo entre eles
+      // Aceita variações como [1], [2], etc ou apenas texto após os números
+      const pattern = /\[1\]\s*[^\[]*(?:\[[2-6]\]\s*[^\[]*){5,}/s;
+      const match = text.match(pattern);
+
+      if (!match) {
+        log('Nenhuma estrutura [1]...[6] encontrada no texto');
+        // Tenta padrão alternativo: busca por seções numeradas
+        const altPattern = /\[1\][\s\S]*\[6\]/;
+        const altMatch = text.match(altPattern);
+        if (altMatch) {
+          log('Padrão alternativo encontrado!');
+          return altMatch[0].trim();
+        }
+        return null;
+      }
+
+      log('Resposta estruturada encontrada! Tamanho:', match[0].length);
+      return match[0].trim();
+    }
+
+    function getTextFromShadowRoot(root) {
+      // Tenta extrair texto de diferentes maneiras
+      // 1. Busca por elementos de mensagem do bot
+      const messageSelectors = [
+        '.bot-message',
+        '[class*="message"]',
+        '[class*="bot"]',
+        '[class*="response"]',
+        'div[role="log"]',
+        '.message-content',
+        '.userMessageBoxBody',
+        '.botMessageBoxBody',
+        '[class*="MessageBox"]'
+      ];
+
+      for (const selector of messageSelectors) {
+        const messages = root.querySelectorAll(selector);
+        if (messages.length > 0) {
+          const text = Array.from(messages)
+            .map(el => el.textContent || '')
+            .join('\n\n');
+          if (text.trim()) {
+            log(`Texto extraído via seletor "${selector}" (${messages.length} elementos)`);
+            log('Preview do texto:', text.substring(0, 300));
+            return text;
+          }
+        }
+      }
+
+      // 2. Fallback: pega todo o textContent
+      const allText = root.textContent || '';
+      log('Fallback: usando root.textContent completo');
+      log('Tamanho do texto total:', allText.length);
+      if (allText.length > 0) {
+        log('Preview:', allText.substring(0, 300));
+      }
+      return allText;
+    }
+
+    function setupObserver() {
+      log('Iniciando setupObserver...');
+
+      const el = document.querySelector('flowise-fullchatbot');
+      if (!el) {
+        console.warn('[ComTesta] flowise-fullchatbot não encontrado. Tentando novamente em 2s...');
+        setTimeout(setupObserver, 2000);
+        return;
+      }
+      log('Elemento flowise-fullchatbot encontrado');
+
+      const root = el.shadowRoot;
+      if (!root) {
+        console.warn('[ComTesta] shadowRoot indisponível. Tentando novamente em 2s...');
+        setTimeout(setupObserver, 2000);
+        return;
+      }
+      log('shadowRoot disponível');
+
+      const link = document.getElementById('dashboard-link');
+      const hint = document.getElementById('dashboard-hint');
+      const bc = new BroadcastChannel('comtesta');
+
+      log('Link e hint encontrados. Iniciando observação...');
+
+      let lastProcessedResponse = ''; // Armazena a última resposta processada
+      let debounce;
+
+      const observer = new MutationObserver((mutations) => {
+        log(`MutationObserver disparado. ${mutations.length} mutações detectadas`);
+        clearTimeout(debounce);
+        debounce = setTimeout(() => {
+          const text = getTextFromShadowRoot(root);
+
+          log('===== ANÁLISE DE RESPOSTA =====');
+          log('Tamanho do texto extraído:', text.length);
+
+          if (text.length === 0) {
+            log('⚠️ Texto vazio extraído do shadowRoot');
+            return;
+          }
+
+          const resp = extractLatestStructuredResponse(text);
+
+          log('Verificando padrões: [1]?', /\[1\]/.test(text), '[6]?', /\[6\]/.test(text));
+
+          if (resp && /\[1\]/.test(resp) && /\[6\]/.test(resp)) {
+
+            // Verifica se é uma resposta NOVA (diferente da última processada)
+            if (resp === lastProcessedResponse) {
+              log('❌ Resposta já foi processada anteriormente, ignorando...');
+              return;
+            }
+
+            log('✅ ✅ ✅ NOVA resposta completa detectada!');
+            log('Tamanho da resposta:', resp.length);
+            log('Primeiros 300 chars:', resp.substring(0, 300));
+
+            window.__latestComtestaResponse = resp;
+            lastProcessedResponse = resp; // Salva o hash/conteúdo da resposta
+
+            // Salva no localStorage para persistência
+            try {
+              localStorage.setItem('comtesta_latest_response', resp);
+              localStorage.setItem('comtesta_latest_timestamp', Date.now().toString());
+              log('✅ Resposta salva no localStorage');
+            } catch (e) {
+              console.warn('[ComTesta] Erro ao salvar no localStorage:', e);
+            }
+
+            // Emite via BroadcastChannel para dashboards já abertos
+            try {
+              bc.postMessage({ type: 'comtesta/response', payload: resp });
+              log('✅ Enviado via BroadcastChannel para dashboards abertos');
+            } catch (e) {
+              console.warn('[ComTesta] Erro ao enviar via BroadcastChannel:', e);
+            }
+
+            // Atualiza o hint
+            if (hint) {
+              hint.textContent = '✓ Nova resposta detectada! Clique em "Ir para o Dashboard" para visualizar.';
+              hint.style.color = '#22c55e';
+              log('✅ Hint atualizado');
+            }
+            if (link) {
+              link.classList.add('ready');
+              log('✅ Link marcado como pronto');
+
+              // Scroll suave para o botão após 1 segundo
+              setTimeout(() => {
+                const dashboardActions = document.querySelector('.dashboard-actions');
+                if (dashboardActions) {
+                  dashboardActions.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                  });
+                  log('✅ Scroll automático para o botão do dashboard');
+                }
+              }, 1000);
+            }
+          } else {
+            log('⏳ Aguardando resposta completa... (tem [1]?', /\[1\]/.test(text), ', tem [6]?', /\[6\]/.test(text), ')');
+            if (resp) {
+              log('Resposta parcial extraída. Tamanho:', resp.length);
+            }
+          }
+        }, 500);
+      });
+
+      observer.observe(root, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+      log('✓ MutationObserver ativo');
+
+      // Handshake: responde quando algum dashboard anunciar que está pronto
+      bc.addEventListener('message', (event) => {
+        const data = event.data || {};
+        log('BroadcastChannel message recebida:', data.type);
+        if (data && data.type === 'comtesta/ready') {
+          const payload = window.__latestComtestaResponse;
+          if (payload) {
+            log('Dashboard ready! Enviando payload...');
+            try { bc.postMessage({ type: 'comtesta/response', payload }); } catch (e) {}
+          }
+        }
+      });
+
+      log('✓ Setup completo. Aguardando resposta do agente...');
+    }
+
+    // Tenta inicializar quando o custom element estiver definido
+    if (window.customElements?.whenDefined) {
+      log('Aguardando custom element ser definido...');
+      window.customElements.whenDefined('flowise-fullchatbot')
+        .then(() => {
+          log('Custom element definido!');
+          setTimeout(setupObserver, 1000); // Pequeno delay para garantir que está renderizado
+        })
+        .catch((err) => {
+          console.warn('[ComTesta] Erro ao aguardar custom element:', err);
+          setTimeout(setupObserver, 2000);
+        });
+    } else {
+      log('customElements.whenDefined não disponível, usando timeout...');
+      setTimeout(setupObserver, 2000);
+    }
+  </script>
+
+  <footer class="site-footer">
+    <div class="container">
+      <a href="/dashboard.html" class="footer-cta">Ir para o Dashboard</a>
+      <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--muted-color); opacity: 0.8;">ComTesta - versão 1.0. Copywriter. PVolker.2025</p>
+    </div>
+  </footer>
+  <script src="/assets/site.js?v=7" defer></script>
+</body>
+</html>
