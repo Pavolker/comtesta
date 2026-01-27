@@ -26,19 +26,28 @@ Not allowed to load local resource: file:///assets/site.css
 cd "/Users/pvolkermini/Library/Mobile Documents/com~apple~CloudDocs/APP DEV/AGENTE COMTESTA1"
 ```
 
-### 3. Inicie o servidor
+### 3. Configure o .env (OpenAI)
+
+Crie um arquivo `.env` na raiz e adicione sua chave:
+
+```bash
+OPENAI_API_KEY=coloque_sua_chave_aqui
+OPENAI_AGENT_ID=seu_agent_id
+```
+
+### 4. Inicie o servidor
 
 **Opção A - Usando o script (mais fácil):**
 ```bash
 ./start-server.sh
 ```
 
-**Opção B - Comando direto:**
+**Opção B - Comando direto (Node.js):**
 ```bash
-python3 -m http.server 8000
+PORT=8000 node server.js
 ```
 
-### 4. Abra no navegador
+### 5. Abra no navegador
 
 Acesse: **http://localhost:8000/agente.html**
 
@@ -59,7 +68,7 @@ Depois que o servidor estiver rodando:
 1. ✅ Servidor rodando em http://localhost:8000
 2. 📱 Abra http://localhost:8000/agente.html
 3. 🔧 Abra o Console (F12 ou Cmd+Option+I)
-4. 💬 Faça uma pergunta ao agente Flowise
+4. 💬 Faça uma pergunta ao agente OpenAI
 5. 👁️ Observe os logs no console:
    ```
    [ComTesta] ✓ Resposta completa detectada!
@@ -75,7 +84,7 @@ Depois que o servidor estiver rodando:
 ### Erro: "Address already in use"
 Porta 8000 está ocupada. Use outra porta:
 ```bash
-python3 -m http.server 8080
+PORT=8080 node server.js
 ```
 Depois acesse: http://localhost:8080/agente.html
 
@@ -107,7 +116,7 @@ Depois que tudo carregar:
 
 - [ ] CSS carregou (página tem cores e estilos)
 - [ ] Logo ComTesta aparece no header
-- [ ] Chat do Flowise aparece
+- [ ] Chat do OpenAI aparece
 - [ ] Console não mostra erros de carregamento
 - [ ] Pode fazer perguntas ao agente
 - [ ] Logs aparecem no console quando agente responde

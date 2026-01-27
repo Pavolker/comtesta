@@ -1,0 +1,336 @@
+/**
+ * OpenAI Chat Styles for ComTesta
+ */
+
+/* Container principal do chat */
+.openai-chat-container {
+    max-width: 860px;
+    margin: 0 auto;
+    background: linear-gradient(145deg, var(--surface-color), var(--bg-secondary));
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.3),
+        0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+/* Header do chat */
+.openai-chat-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.openai-chat-header h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.openai-chat-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+    max-width: none;
+}
+
+/* Área de mensagens */
+.openai-chat-messages {
+    height: 500px;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: var(--bg-secondary);
+    /* Se não houver mensagens (vazio), esconde ou reduz */
+}
+
+.openai-chat-messages:empty {
+    display: none;
+}
+
+/* Mensagem individual */
+.openai-message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.openai-message-user {
+    align-items: flex-end;
+}
+
+.openai-message-assistant {
+    align-items: flex-start;
+}
+
+/* Header da mensagem */
+.openai-message-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.openai-avatar {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.openai-role {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.openai-message-user .openai-role {
+    color: var(--text-light);
+}
+
+.openai-message-assistant .openai-role {
+    color: var(--primary-color);
+}
+
+/* Conteúdo da mensagem */
+.openai-message-content {
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    max-width: 85%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.openai-message-user .openai-message-content {
+    background: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.openai-message-assistant .openai-message-content {
+    background: var(--surface-color);
+    color: var(--text-color);
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Loading indicator */
+.openai-loading-dots {
+    display: flex;
+    gap: 4px;
+    padding: 0.25rem 0;
+}
+
+.openai-loading-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    animation: bounce 1.4s infinite;
+}
+
+.openai-loading-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.openai-loading-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Input area */
+.openai-chat-input-area {
+    padding: 1.25rem;
+    background: var(--surface-color);
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.openai-input-wrapper {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.openai-input-wrapper textarea {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 60px;
+    max-height: 200px;
+}
+
+.openai-input-wrapper textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.openai-input-wrapper textarea::placeholder {
+    color: var(--text-light);
+}
+
+.openai-send-button {
+    padding: 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.openai-send-button:hover:not(:disabled) {
+    background: var(--primary-dark, var(--primary-color));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.openai-send-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.openai-send-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Chat hint */
+.openai-chat-hint {
+    display: flex;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.openai-chat-hint small {
+    opacity: 0.8;
+}
+
+/* Error styles */
+.openai-config-error {
+    padding: 2rem;
+    text-align: center;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 12px;
+    color: var(--text-color);
+}
+
+.openai-config-error .error-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.openai-config-error h3 {
+    margin-bottom: 1rem;
+    color: #ef4444;
+}
+
+.openai-config-error p {
+    margin-bottom: 1.5rem;
+}
+
+.openai-config-error code {
+    background: rgba(59, 130, 246, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    color: var(--primary-color);
+}
+
+.openai-config-error .error-steps {
+    background: rgba(59, 130, 246, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.openai-config-error .error-steps h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.openai-config-error .error-steps ol {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.openai-config-error .error-steps li {
+    margin-bottom: 0.5rem;
+}
+
+.openai-config-error a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.openai-config-error a:hover {
+    text-decoration: underline;
+}
+
+.retry-button {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.retry-button:hover {
+    background: var(--primary-dark, var(--primary-color));
+    transform: translateY(-1px);
+}
+
+.retry-button:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .openai-chat-messages {
+        height: 400px;
+    }
+
+    .openai-message-content {
+        max-width: 95%;
+    }
+
+    .openai-input-wrapper {
+        flex-direction: column;
+    }
+
+    .openai-send-button {
+        width: 100%;
+    }
+}

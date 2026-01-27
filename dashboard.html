@@ -1,77 +1,350 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ComTesta — Dashboard Epistemológico</title>
-  <meta name="description" content="Visualize a resposta estruturada do agente ComTesta em um dashboard de coerência epistemológica.">
-  <link rel="stylesheet" href="/assets/site.css?v=5">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComTesta — Dashboard de Análise</title>
+    <meta name="description" content="Dashboard de análise epistemológica do agente ComTesta.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/assets/site.css">
+    <!-- Chart.js para o gráfico de radar -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Estilos específicos do Dashboard para complementar site.css */
+
+        .dashboard-header {
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dashboard-status {
+            font-size: 0.9rem;
+            color: var(--muted-color);
+            margin-top: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-status::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        .dashboard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color-light);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+        }
+
+        /* Estilização das seções de relatório */
+        .dashboard-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dashboard-section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .dashboard-section h2,
+        .dashboard-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .dashboard-section h2 {
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .dashboard-section h3 {
+            font-size: 1.25rem;
+        }
+
+        .dashboard-section ul,
+        .dashboard-section ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-section li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .dashboard-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+            color: var(--text-color);
+        }
+
+        /* Estilo especial para a seção do Mapa (Radar) */
+        .map-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 900px) {
+            .map-section {
+                grid-template-columns: 1fr 1fr;
+                align-items: start;
+            }
+
+            .map-section h3 {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .radar-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .radar-chart-wrapper {
+            position: relative;
+            height: auto;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            z-index: 1001;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .indicators-list {
+            background: var(--background-color);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .indicators-list ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .indicators-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .indicators-list li:last-child {
+            border-bottom: none;
+        }
+
+        .indicators-list strong {
+            color: var(--heading-color);
+        }
+
+        .score-average {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px dashed var(--primary-color);
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        /* Card de Destaque para Síntese */
+        .synthesis-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .synthesis-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+
+        /* Estado vazio */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted-color);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
 </head>
-<body id="topo">
-  <header class="site-header">
-    <div class="container">
-      <a href="/index.html#inicio" class="logo" aria-label="Voltar à página inicial">
-        <img src="/comtesta.png" alt="ComTesta" class="logo-image" loading="eager" decoding="async">
-      </a>
-      <nav id="site-navigation" class="main-nav">
-        <ul>
-          <li><a href="/index.html#inicio">Início</a></li>
-          <li><a href="/index.html#importancia">Importância</a></li>
-          <li><a href="/index.html#caracteristicas">Características</a></li>
-          <li><a href="/index.html#agentes">Agentes</a></li>
-          <li><a href="/dashboard.html" class="active">Dashboard</a></li>
-        </ul>
-      </nav>
-      <img src="/botao.png" alt="Botão ComTesta" class="header-button-image" loading="eager" decoding="async">
-      <button class="mobile-nav-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-navigation">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-  </header>
 
-  <main class="dashboard-main">
-    <section class="dashboard-header">
-      <div class="container">
-        <h1>Dashboard de Coerência Epistemológica</h1>
-        <p>Análise automática gerada pelo agente ComTesta</p>
-      </div>
-    </section>
+<body>
 
-    <section class="dashboard-results">
-      <div class="container">
-        <div class="dashboard-stage" data-dashboard-stage hidden>
-          <div class="dashboard-meta">
-            <span data-dashboard-status>Análise carregada automaticamente</span>
-            <div class="meta-actions">
-              <button class="btn btn-primary" data-download-dashboard>⬇ Download Dashboard</button>
-            </div>
-          </div>
-          <div class="dashboard-output" data-dashboard-output></div>
-          <div class="dashboard-disclaimer">
-            <p><strong>Nota importante:</strong> Esta análise refere-se à coerência do pensamento, não ao conteúdo ou aos resultados práticos das ações.</p>
-          </div>
-          <div class="dashboard-reset">
-            <button class="btn btn-danger" data-reset-dashboard>🔄 Nova Análise (Limpar Dados)</button>
-            <p class="reset-hint">Limpa todos os dados salvos e reinicia o processo para uma nova análise.</p>
-          </div>
+    <header class="site-header">
+        <div class="container">
+            <a href="/index.html#inicio" class="logo" aria-label="Página inicial">
+                <img src="/comtesta.png" alt="ComTesta" class="logo-image" loading="eager" decoding="async">
+            </a>
+            <nav id="site-navigation" class="main-nav">
+                <ul>
+                    <li><a href="/index.html#inicio">Início</a></li>
+                    <li><a href="/index.html#chat-agente">Novo Teste</a></li>
+                    <li><a href="#" class="active">Dashboard</a></li>
+                </ul>
+            </nav>
+            <img src="/botao.png" alt="Botão ComTesta" class="header-button-image" loading="eager" decoding="async">
+            <button class="mobile-nav-toggle" aria-label="Abrir menu" aria-expanded="false"
+                aria-controls="site-navigation">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
         </div>
-      </div>
-    </section>
-  </main>
+    </header>
 
-  <footer class="site-footer">
-    <div class="container">
-      <a href="/agente.html" class="footer-cta">Voltar ao Agente</a>
-      <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--muted-color); opacity: 0.8;">ComTesta - versão 1.0. Copywriter. PVolker.2025</p>
-    </div>
-  </footer>
+    <main>
+        <div class="container">
 
-  <a href="#topo" class="back-to-top" aria-label="Voltar ao topo">↑</a>
+            <section class="dashboard-header">
+                <h1>Dashboard Epistemológico</h1>
+                <p>Visualização e auditoria da coerência argumentativa</p>
+                <div class="dashboard-status" data-dashboard-status>Aguardando dados...</div>
+            </section>
 
-  <script src="/assets/site.js?v=5" defer></script>
-  <script src="/assets/dashboard.js?v=7" defer></script>
+            <!-- Container para o conteúdo do relatório -->
+            <div id="dashboard-stage" data-dashboard-stage hidden>
+
+                <div class="dashboard-controls">
+                    <button class="btn btn-outline" data-download-dashboard>
+                        ⬇ Baixar Relatório (HTML)
+                    </button>
+                    <button class="btn btn-danger" data-reset-dashboard>
+                        🗑 Limpar Análise
+                    </button>
+                </div>
+
+                <div id="dashboard-output" data-dashboard-output>
+                    <!-- O conteúdo gerado pelo JS será injetado aqui -->
+                </div>
+
+                <!-- Seção de Download PDF -->
+                <!-- Seção de Download HTML -->
+                <div class="html-download-section"
+                    style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                    <h3>Gostou da análise?</h3>
+                    <p style="margin-bottom: 1.5rem; color: var(--muted-color);">Baixe o relatório completo em HTML para
+                        compartilhar ou ler depois.</p>
+                    <button id="btn-download-html" class="btn btn-primary"
+                        style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; font-size: 1.1rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Baixar Análise em HTML
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Estado inicial vazio -->
+
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--muted-color); opacity: 0.8;">ComTesta - versão
+                1.0. Copywriter. PVolker.2025</p>
+        </div>
+    </footer>
+
+
+    <script src="/assets/site.js"></script>
+    <script src="/assets/dashboard.js"></script>
+    <script>
+        // Script simples para alternar entre loading/empty state e o dashboard preenchido
+        // Script simples para alternar entre loading/empty state e o dashboard preenchido
+        document.addEventListener('DOMContentLoaded', () => {
+            // O código original de controle do empty-stage foi removido.
+        });
+    </script>
 </body>
+
 </html>
