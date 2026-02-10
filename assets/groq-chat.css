@@ -1,9 +1,9 @@
 /**
- * OpenAI Chat Styles for ComTesta
+ * Groq Chat Styles for ComTesta
  */
 
 /* Container principal do chat */
-.openai-chat-container {
+.groq-chat-container {
     max-width: 860px;
     margin: 0 auto;
     background: linear-gradient(145deg, var(--surface-color), var(--bg-secondary));
@@ -17,20 +17,20 @@
 }
 
 /* Header do chat */
-.openai-chat-header {
+.groq-chat-header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     padding: 1.5rem;
     text-align: center;
 }
 
-.openai-chat-header h3 {
+.groq-chat-header h3 {
     margin: 0 0 0.5rem 0;
     font-size: 1.5rem;
     font-weight: 700;
 }
 
-.openai-chat-header p {
+.groq-chat-header p {
     margin: 0;
     opacity: 0.9;
     font-size: 0.95rem;
@@ -38,7 +38,7 @@
 }
 
 /* Área de mensagens */
-.openai-chat-messages {
+.groq-chat-messages {
     height: 500px;
     overflow-y: auto;
     padding: 1.5rem;
@@ -49,12 +49,12 @@
     /* Se não houver mensagens (vazio), esconde ou reduz */
 }
 
-.openai-chat-messages:empty {
+.groq-chat-messages:empty {
     display: none;
 }
 
 /* Mensagem individual */
-.openai-message {
+.groq-message {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -62,41 +62,41 @@
     overflow-wrap: break-word;
 }
 
-.openai-message-user {
+.groq-message-user {
     align-items: flex-end;
 }
 
-.openai-message-assistant {
+.groq-message-assistant {
     align-items: flex-start;
 }
 
 /* Header da mensagem */
-.openai-message-header {
+.groq-message-header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.openai-avatar {
+.groq-avatar {
     font-size: 1.5rem;
     line-height: 1;
 }
 
-.openai-role {
+.groq-role {
     font-size: 0.85rem;
     opacity: 0.8;
 }
 
-.openai-message-user .openai-role {
+.groq-message-user .groq-role {
     color: var(--text-light);
 }
 
-.openai-message-assistant .openai-role {
+.groq-message-assistant .groq-role {
     color: var(--primary-color);
 }
 
 /* Conteúdo da mensagem */
-.openai-message-content {
+.groq-message-content {
     padding: 0.75rem 1rem;
     border-radius: 12px;
     line-height: 1.6;
@@ -106,13 +106,13 @@
     overflow-wrap: break-word;
 }
 
-.openai-message-user .openai-message-content {
+.groq-message-user .groq-message-content {
     background: var(--primary-color);
     color: white;
     border-bottom-right-radius: 4px;
 }
 
-.openai-message-assistant .openai-message-content {
+.groq-message-assistant .groq-message-content {
     background: var(--surface-color);
     color: var(--text-color);
     border-bottom-left-radius: 4px;
@@ -120,13 +120,13 @@
 }
 
 /* Loading indicator */
-.openai-loading-dots {
+.groq-loading-dots {
     display: flex;
     gap: 4px;
     padding: 0.25rem 0;
 }
 
-.openai-loading-dots span {
+.groq-loading-dots span {
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -134,11 +134,11 @@
     animation: bounce 1.4s infinite;
 }
 
-.openai-loading-dots span:nth-child(1) {
+.groq-loading-dots span:nth-child(1) {
     animation-delay: -0.32s;
 }
 
-.openai-loading-dots span:nth-child(2) {
+.groq-loading-dots span:nth-child(2) {
     animation-delay: -0.16s;
 }
 
@@ -154,19 +154,19 @@
 }
 
 /* Input area */
-.openai-chat-input-area {
+.groq-chat-input-area {
     padding: 1.25rem;
     background: var(--surface-color);
     border-top: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.openai-input-wrapper {
+.groq-input-wrapper {
     display: flex;
     gap: 0.75rem;
     margin-bottom: 0.75rem;
 }
 
-.openai-input-wrapper textarea {
+.groq-input-wrapper textarea {
     flex: 1;
     padding: 0.75rem;
     border: 1px solid rgba(148, 163, 184, 0.2);
@@ -180,17 +180,17 @@
     max-height: 200px;
 }
 
-.openai-input-wrapper textarea:focus {
+.groq-input-wrapper textarea:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-.openai-input-wrapper textarea::placeholder {
+.groq-input-wrapper textarea::placeholder {
     color: var(--text-light);
 }
 
-.openai-send-button {
+.groq-send-button {
     padding: 0.75rem;
     background: var(--primary-color);
     color: white;
@@ -205,35 +205,35 @@
     min-height: 44px;
 }
 
-.openai-send-button:hover:not(:disabled) {
+.groq-send-button:hover:not(:disabled) {
     background: var(--primary-dark, var(--primary-color));
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.openai-send-button:active:not(:disabled) {
+.groq-send-button:active:not(:disabled) {
     transform: translateY(0);
 }
 
-.openai-send-button:disabled {
+.groq-send-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 /* Chat hint */
-.openai-chat-hint {
+.groq-chat-hint {
     display: flex;
     justify-content: center;
     font-size: 0.85rem;
     color: var(--text-light);
 }
 
-.openai-chat-hint small {
+.groq-chat-hint small {
     opacity: 0.8;
 }
 
 /* Error styles */
-.openai-config-error {
+.groq-config-error {
     padding: 2rem;
     text-align: center;
     background: rgba(239, 68, 68, 0.05);
@@ -242,21 +242,21 @@
     color: var(--text-color);
 }
 
-.openai-config-error .error-icon {
+.groq-config-error .error-icon {
     font-size: 2.5rem;
     margin-bottom: 1rem;
 }
 
-.openai-config-error h3 {
+.groq-config-error h3 {
     margin-bottom: 1rem;
     color: #ef4444;
 }
 
-.openai-config-error p {
+.groq-config-error p {
     margin-bottom: 1.5rem;
 }
 
-.openai-config-error code {
+.groq-config-error code {
     background: rgba(59, 130, 246, 0.1);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
@@ -264,7 +264,7 @@
     color: var(--primary-color);
 }
 
-.openai-config-error .error-steps {
+.groq-config-error .error-steps {
     background: rgba(59, 130, 246, 0.05);
     padding: 1.5rem;
     border-radius: 8px;
@@ -272,27 +272,27 @@
     margin-bottom: 1.5rem;
 }
 
-.openai-config-error .error-steps h4 {
+.groq-config-error .error-steps h4 {
     margin-top: 0;
     margin-bottom: 1rem;
     font-weight: 600;
 }
 
-.openai-config-error .error-steps ol {
+.groq-config-error .error-steps ol {
     margin: 0;
     padding-left: 1.5rem;
 }
 
-.openai-config-error .error-steps li {
+.groq-config-error .error-steps li {
     margin-bottom: 0.5rem;
 }
 
-.openai-config-error a {
+.groq-config-error a {
     color: var(--primary-color);
     text-decoration: none;
 }
 
-.openai-config-error a:hover {
+.groq-config-error a:hover {
     text-decoration: underline;
 }
 
@@ -318,19 +318,19 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .openai-chat-messages {
+    .groq-chat-messages {
         height: 400px;
     }
 
-    .openai-message-content {
+    .groq-message-content {
         max-width: 95%;
     }
 
-    .openai-input-wrapper {
+    .groq-input-wrapper {
         flex-direction: column;
     }
 
-    .openai-send-button {
+    .groq-send-button {
         width: 100%;
     }
 }

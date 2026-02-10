@@ -26,13 +26,13 @@ Not allowed to load local resource: file:///assets/site.css
 cd "/Users/pvolkermini/Library/Mobile Documents/com~apple~CloudDocs/APP DEV/AGENTE COMTESTA1"
 ```
 
-### 3. Configure o .env (OpenAI)
+### 3. Configure o .env (Groq - LLaMA)
 
 Crie um arquivo `.env` na raiz e adicione sua chave:
 
 ```bash
-OPENAI_API_KEY=coloque_sua_chave_aqui
-OPENAI_AGENT_ID=seu_agent_id
+GROQ_API_KEY=coloque_sua_chave_aqui
+GROQ_MODEL=llama-3.1-8b-instant
 ```
 
 ### 4. Inicie o servidor
@@ -68,7 +68,7 @@ Depois que o servidor estiver rodando:
 1. ✅ Servidor rodando em http://localhost:8000
 2. 📱 Abra http://localhost:8000/agente.html
 3. 🔧 Abra o Console (F12 ou Cmd+Option+I)
-4. 💬 Faça uma pergunta ao agente OpenAI
+4. 💬 Faça uma pergunta ao agente Groq (LLaMA)
 5. 👁️ Observe os logs no console:
    ```
    [ComTesta] ✓ Resposta completa detectada!
@@ -116,7 +116,7 @@ Depois que tudo carregar:
 
 - [ ] CSS carregou (página tem cores e estilos)
 - [ ] Logo ComTesta aparece no header
-- [ ] Chat do OpenAI aparece
+- [ ] Chat do Groq aparece
 - [ ] Console não mostra erros de carregamento
 - [ ] Pode fazer perguntas ao agente
 - [ ] Logs aparecem no console quando agente responde

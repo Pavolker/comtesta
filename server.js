@@ -34,8 +34,8 @@ const PORT = Number(process.env.PORT) || 8000;
 const HOST = process.env.HOST || '127.0.0.1';
 
 // Log de depuração da chave (seguro)
-const key = process.env.OPENAI_API_KEY || '';
-console.log(`[Config] OPENAI_API_KEY carregada: ${key.substring(0, 10)}... (Total: ${key.length} chars)`);
+const key = process.env.GROQ_API_KEY || '';
+console.log(`[Config] GROQ_API_KEY carregada: ${key.substring(0, 10)}... (Total: ${key.length} chars)`);
 const ROOT = process.cwd();
 const MAX_BODY_BYTES = 1 * 1024 * 1024;
 const DEFAULT_CORS_ORIGINS = ['https://comtesta.netlify.app'];
@@ -71,7 +71,7 @@ function sendJson(res, statusCode, payload) {
   res.end(body);
 }
 
-async function handleOpenAI(req, res) {
+async function handleGroq(req, res) {
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
@@ -83,16 +83,11 @@ async function handleOpenAI(req, res) {
     return;
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  const agentId = process.env.OPENAI_AGENT_ID;
+  const apiKey = process.env.GROQ_API_KEY;
+  const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
   
   if (!apiKey) {
-    sendJson(res, 500, { error: 'OPENAI_API_KEY nao configurada no .env.' });
-    return;
-  }
-
-  if (!agentId) {
-    sendJson(res, 500, { error: 'OPENAI_AGENT_ID nao configurada no .env.' });
+    sendJson(res, 500, { error: 'GROQ_API_KEY nao configurada no .env.' });
     return;
   }
 
@@ -127,23 +122,27 @@ async function handleOpenAI(req, res) {
       return;
     }
 
-    console.log(`[OpenAI] Enviando mensagem para agente: ${agentId}`);
-    console.log(`[OpenAI] Mensagem: ${message.substring(0, 100)}...`);
+    console.log(`[Groq] Enviando mensagem para modelo: ${model}`);
+    console.log(`[Groq] Mensagem: ${message.substring(0, 100)}...`);
 
     try {
       // Usar Chat Completions API padrão
       
-      console.log(`[OpenAI] Executando Chat Completion (simulando workflow)`);
+      console.log(`[Groq] Executando Chat Completion`);
       
-      const workflowUrl = `https://api.openai.com/v1/chat/completions`;
+      const workflowUrl = `https://api.groq.com/openai/v1/chat/completions`;
       
       // Carregar System Prompt
       let systemPrompt = '';
       try {
         systemPrompt = fs.readFileSync(path.join(ROOT, 'assets', 'comtesta-system-prompt.txt'), 'utf8');
       } catch (e) {
-        console.error('[OpenAI] Erro ao carregar system prompt:', e.message);
+        console.error('[Groq] Erro ao carregar system prompt:', e.message);
         systemPrompt = 'Você é um assistente útil.';
+      }
+
+      if (typeof payload.systemPrompt === 'string' && payload.systemPrompt.trim().length > 0) {
+        systemPrompt = payload.systemPrompt.trim();
       }
 
       // Montar mensagens
@@ -154,13 +153,13 @@ async function handleOpenAI(req, res) {
       ];
 
       const workflowPayload = {
-        model: "gpt-4o", // Usando gpt-4o como substituto do gpt-5-nano
+        model,
         messages: messages,
         temperature: 0.7
       };
       
-      console.log(`[OpenAI] URL: ${workflowUrl}`);
-      // console.log(`[OpenAI] Payload:`, JSON.stringify(workflowPayload, null, 2)); // Debug opcional
+      console.log(`[Groq] URL: ${workflowUrl}`);
+      // console.log(`[Groq] Payload:`, JSON.stringify(workflowPayload, null, 2)); // Debug opcional
 
       
       const workflowResponse = await fetch(workflowUrl, {
@@ -172,26 +171,26 @@ async function handleOpenAI(req, res) {
         body: JSON.stringify(workflowPayload)
       });
 
-      console.log(`[OpenAI] Status: ${workflowResponse.status}`);
+      console.log(`[Groq] Status: ${workflowResponse.status}`);
       
       let responseText = '';
       try {
         responseText = await workflowResponse.text();
-        console.log(`[OpenAI] Response (primeiros 500 chars): ${responseText.substring(0, 500)}`);
+        console.log(`[Groq] Response (primeiros 500 chars): ${responseText.substring(0, 500)}`);
       } catch (e) {
-        console.log(`[OpenAI] Erro ao ler resposta: ${e.message}`);
+        console.log(`[Groq] Erro ao ler resposta: ${e.message}`);
       }
 
       let workflowData = {};
       try {
         workflowData = JSON.parse(responseText);
       } catch (e) {
-        console.log(`[OpenAI] Resposta não é JSON válido`);
+        console.log(`[Groq] Resposta não é JSON válido`);
       }
       
       if (!workflowResponse.ok) {
-        console.error(`[OpenAI] Erro ${workflowResponse.status}:`, workflowData);
-        sendJson(res, workflowResponse.status, { error: workflowData.error?.message || 'Falha ao executar OpenAI API.' });
+        console.error(`[Groq] Erro ${workflowResponse.status}:`, workflowData);
+        sendJson(res, workflowResponse.status, { error: workflowData.error?.message || 'Falha ao executar Groq API.' });
         return;
       }
 
@@ -199,16 +198,16 @@ async function handleOpenAI(req, res) {
       let text = workflowData.choices?.[0]?.message?.content;
       
       if (!text) {
-        console.error('[OpenAI] Sem content na resposta:', workflowData);
-        sendJson(res, 500, { error: 'OpenAI não retornou resposta de texto.' });
+        console.error('[Groq] Sem content na resposta:', workflowData);
+        sendJson(res, 500, { error: 'Groq não retornou resposta de texto.' });
         return;
       }
 
-      console.log(`[OpenAI] ✅ Sucesso: ${text.substring(0, 100)}...`);
+      console.log(`[Groq] ✅ Sucesso: ${text.substring(0, 100)}...`);
       sendJson(res, 200, { text });
     } catch (error) {
-      console.error('[OpenAI] Erro:', error.message);
-      sendJson(res, 500, { error: error.message || 'Erro ao contatar OpenAI Agent Builder.' });
+      console.error('[Groq] Erro:', error.message);
+      sendJson(res, 500, { error: error.message || 'Erro ao contatar Groq.' });
     }
   });
 }
@@ -287,8 +286,8 @@ const server = http.createServer((req, res) => {
   }
   
   if (req.url && req.url.startsWith('/api/openai')) {
-    console.log(`[Server] Roteando para handleOpenAI`);
-    handleOpenAI(req, res);
+    console.log(`[Server] Roteando para handleGroq (endpoint legado /api/openai)`);
+    handleGroq(req, res);
     return;
   }
 
@@ -304,5 +303,5 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, HOST, () => {
   console.log(`Servidor ComTesta ativo em http://${HOST}:${PORT}`);
-  console.log(`[OpenAI] Agent ID configurado: ${process.env.OPENAI_AGENT_ID}`);
+  console.log(`[Groq] Modelo configurado: ${process.env.GROQ_MODEL || 'llama-3.1-8b-instant'}`);
 });

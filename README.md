@@ -11,12 +11,13 @@ Todos os estilos e comportamentos comuns ficam em `assets/site.css` e `assets/si
 
 **IMPORTANTE:** Não abra os arquivos HTML diretamente (file://). Você precisa usar um servidor HTTP local.
 
-### 0. Configure o .env (Gemini)
+### 0. Configure o .env (Groq - LLaMA)
 
 Crie um arquivo `.env` na raiz e adicione sua chave:
 
 ```bash
-GEMINI_API_KEY=coloque_sua_chave_aqui
+GROQ_API_KEY=coloque_sua_chave_aqui
+GROQ_MODEL=llama-3.1-8b-instant
 ```
 
 ### Opção 1: Script automático (recomendado)
@@ -59,7 +60,7 @@ php -S localhost:8000
 
 1. Crie um novo site no Netlify apontando o diretório atual como _Publish directory_ (a raiz do projeto).
 2. Opcionalmente conecte um repositório Git; não é necessário configurar build step.
-3. Para Gemini em produção, use um backend que injete a chave via variável de ambiente.
+3. Para Groq em produção, use um backend que injete a chave via variável de ambiente.
 
 ## Próximos passos
 

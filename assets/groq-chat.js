@@ -1,19 +1,18 @@
 /**
- * OpenAI Agent Builder Chat Component for ComTesta
+ * Groq (LLaMA) Chat Component for ComTesta
  */
 
 // Limpar qualquer modelo cacheado no localStorage/sessionStorage
 if (typeof window !== 'undefined') {
-    localStorage.removeItem('openai_agent_id');
-    sessionStorage.removeItem('openai_agent_id');
+    localStorage.removeItem('groq_agent_id');
+    sessionStorage.removeItem('groq_agent_id');
 }
 
-class OpenAIChat {
-    constructor(apiUrl, containerId, systemPrompt = null, agentId = null) {
+class GroqChat {
+    constructor(apiUrl, containerId, systemPrompt = null) {
         this.apiUrl = apiUrl;
         this.containerId = containerId;
         this.systemPrompt = systemPrompt;
-        this.agentId = agentId;
         this.history = [];
         this.isLoading = false;
         this.init();
@@ -28,21 +27,21 @@ class OpenAIChat {
     createChatInterface() {
         const container = document.getElementById(this.containerId);
         if (!container) {
-            console.error('[OpenAI] Container não encontrado:', this.containerId);
+            console.error('[Groq] Container não encontrado:', this.containerId);
             return;
         }
 
         container.innerHTML = `
-            <div class="openai-chat-container">
-                <div class="openai-chat-messages" id="openai-messages"></div>
-                <div class="openai-chat-input-area">
-                    <div class="openai-input-wrapper">
+            <div class="groq-chat-container">
+                <div class="groq-chat-messages" id="groq-messages"></div>
+                <div class="groq-chat-input-area">
+                    <div class="groq-input-wrapper">
                         <textarea 
-                            id="openai-input" 
+                            id="groq-input" 
                             placeholder="Digite sua ideia, argumento ou decisão aqui..." 
                             rows="3"
                         ></textarea>
-                        <button id="openai-send-btn" class="openai-send-button" disabled>
+                        <button id="groq-send-btn" class="groq-send-button" disabled>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -55,8 +54,8 @@ class OpenAIChat {
     }
 
     setupEventListeners() {
-        const input = document.getElementById('openai-input');
-        const sendBtn = document.getElementById('openai-send-btn');
+        const input = document.getElementById('groq-input');
+        const sendBtn = document.getElementById('groq-send-btn');
 
         if (input && sendBtn) {
             // Enable/disable send button based on input
@@ -88,8 +87,8 @@ class OpenAIChat {
     }
 
     async sendMessage() {
-        const input = document.getElementById('openai-input');
-        const sendBtn = document.getElementById('openai-send-btn');
+        const input = document.getElementById('groq-input');
+        const sendBtn = document.getElementById('groq-send-btn');
 
         if (!input || !sendBtn) return;
 
@@ -108,8 +107,8 @@ class OpenAIChat {
         const loadingMsg = this.addLoadingMessage();
 
         try {
-            // Call OpenAI Agent API
-            const response = await this.callOpenAIAPI(message);
+            // Call Groq API
+            const response = await this.callGroqAPI(message);
 
             // Remove loading message
             loadingMsg.remove();
@@ -121,7 +120,7 @@ class OpenAIChat {
             this.onNewResponse(response);
 
         } catch (error) {
-            console.error('[OpenAI] Erro na chamada API:', error);
+            console.error('[Groq] Erro na chamada API:', error);
 
             // Remove loading message
             loadingMsg.remove();
@@ -129,7 +128,7 @@ class OpenAIChat {
             // Show error message
             this.addMessage('assistant', `
                 **❌ Desculpe, ocorreu um erro:**
-                ${error.message || 'Falha na comunicação com o OpenAI Agent Builder'}
+                ${error.message || 'Falha na comunicação com o Groq'}
                 
                 Tente novamente em alguns instantes.
             `);
@@ -139,9 +138,9 @@ class OpenAIChat {
         }
     }
 
-    async callOpenAIAPI(message) {
+    async callGroqAPI(message) {
         if (!this.apiUrl) {
-            throw new Error('Endpoint do OpenAI não configurado');
+            throw new Error('Endpoint do Groq não configurado');
         }
 
         // Prepare history (limit to last 10 messages to save tokens)
@@ -150,10 +149,9 @@ class OpenAIChat {
             content: msg.content
         }));
 
-        console.log('[OpenAIChat] ========== INICIANDO CHAMADA API ==========');
-        console.log('[OpenAIChat] URL:', this.apiUrl);
-        console.log('[OpenAIChat] Agent ID:', this.agentId);
-        console.log('[OpenAIChat] Mensagem:', message.substring(0, 100));
+        console.log('[GroqChat] ========== INICIANDO CHAMADA API ==========');
+        console.log('[GroqChat] URL:', this.apiUrl);
+        console.log('[GroqChat] Mensagem:', message.substring(0, 100));
         
         const response = await fetch(this.apiUrl, {
             method: 'POST',
@@ -163,49 +161,48 @@ class OpenAIChat {
             body: JSON.stringify({
                 message,
                 history: historyPayload, // Enviar histórico
-                systemPrompt: this.systemPrompt,
-                agentId: this.agentId
+                systemPrompt: this.systemPrompt
             })
         });
 
-        console.log('[OpenAIChat] Status da resposta:', response.status);
+        console.log('[GroqChat] Status da resposta:', response.status);
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            console.error('[OpenAIChat] Erro na resposta:', errorData);
+            console.error('[GroqChat] Erro na resposta:', errorData);
             throw new Error(`Erro ${response.status}: ${errorData.error || 'Falha na requisição'}`);
         }
 
         const data = await response.json();
-        console.log('[OpenAIChat] Dados recebidos:', data);
+        console.log('[GroqChat] Dados recebidos:', data);
 
         if (!data.text) {
-            throw new Error('Resposta inválida do OpenAI Agent Builder');
+            throw new Error('Resposta inválida do Groq');
         }
 
-        console.log('[OpenAIChat] ========== SUCESSO ==========');
+        console.log('[GroqChat] ========== SUCESSO ==========');
         return data.text;
     }
 
     addMessage(role, content) {
-        const messagesContainer = document.getElementById('openai-messages');
+        const messagesContainer = document.getElementById('groq-messages');
         if (!messagesContainer) return null;
 
         // Salvar no histórico interno
         this.history.push({ role, content });
 
         const messageDiv = document.createElement('div');
-        messageDiv.className = `openai-message openai-message-${role}`;
+        messageDiv.className = `groq-message groq-message-${role}`;
 
         const roleLabel = role === 'user' ? 'Você' : 'Agente ComTesta';
         const avatar = role === 'user' ? '👤' : '🤖';
 
         messageDiv.innerHTML = `
-            <div class="openai-message-header">
-                <span class="openai-avatar">${avatar}</span>
-                <strong class="openai-role">${roleLabel}</strong>
+            <div class="groq-message-header">
+                <span class="groq-avatar">${avatar}</span>
+                <strong class="groq-role">${roleLabel}</strong>
             </div>
-            <div class="openai-message-content">${this.formatMessage(content)}</div>
+            <div class="groq-message-content">${this.formatMessage(content)}</div>
         `;
 
         messagesContainer.appendChild(messageDiv);
@@ -215,19 +212,19 @@ class OpenAIChat {
     }
 
     addLoadingMessage() {
-        const messagesContainer = document.getElementById('openai-messages');
+        const messagesContainer = document.getElementById('groq-messages');
         if (!messagesContainer) return null;
 
         const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'openai-message openai-message-assistant openai-loading';
+        loadingDiv.className = 'groq-message groq-message-assistant groq-loading';
 
         loadingDiv.innerHTML = `
-            <div class="openai-message-header">
-                <span class="openai-avatar">🤖</span>
-                <strong class="openai-role">Agente ComTesta</strong>
+            <div class="groq-message-header">
+                <span class="groq-avatar">🤖</span>
+                <strong class="groq-role">Agente ComTesta</strong>
             </div>
-            <div class="openai-message-content">
-                <div class="openai-loading-dots">
+            <div class="groq-message-content">
+                <div class="groq-loading-dots">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -272,7 +269,7 @@ class OpenAIChat {
 
     clearHistory() {
         this.history = [];
-        const messagesContainer = document.getElementById('openai-messages');
+        const messagesContainer = document.getElementById('groq-messages');
         if (messagesContainer) {
             messagesContainer.innerHTML = '';
             this.showWelcomeMessage();
@@ -282,63 +279,61 @@ class OpenAIChat {
 
 // Auto-initialization when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('[OpenAIChat] ========== AUTO-INITIALIZATION STARTED ==========');
+    console.log('[GroqChat] ========== AUTO-INITIALIZATION STARTED ==========');
     
-    // Check if we should initialize OpenAI (based on config)
+    // Check if we should initialize Groq (based on config)
     const config = window.getAgentConfig?.();
 
-    console.log('[OpenAIChat] Config type:', config?.type);
-    console.log('[OpenAIChat] Full config:', config);
+    console.log('[GroqChat] Config type:', config?.type);
+    console.log('[GroqChat] Full config:', config);
 
-    if (config && config.type === 'openai') {
-        console.log('[OpenAIChat] Configuração OpenAI detectada');
+    if (config && config.type === 'groq') {
+        console.log('[GroqChat] Configuração Groq detectada');
         
         // Validate configuration
-        if (!window.validateConfig?.() || !config.apiUrl || !config.agentId) {
-            console.error('[OpenAI] Configuração inválida ou endpoint ausente');
-            console.error('[OpenAI] validateConfig:', window.validateConfig?.());
-            console.error('[OpenAI] apiUrl:', config?.apiUrl);
-            console.error('[OpenAI] agentId:', config?.agentId);
+        if (!window.validateConfig?.() || !config.apiUrl) {
+            console.error('[Groq] Configuração inválida ou endpoint ausente');
+            console.error('[Groq] validateConfig:', window.validateConfig?.());
+            console.error('[Groq] apiUrl:', config?.apiUrl);
             showConfigurationError();
             return;
         }
 
-        // Initialize OpenAI chat
-        const containerId = 'openai-chat-container';
+        // Initialize Groq chat
+        const containerId = 'groq-chat-container';
         const container = document.getElementById(containerId);
 
-        console.log('[OpenAIChat] Container found:', !!container);
+        console.log('[GroqChat] Container found:', !!container);
 
         if (container) {
-            window.openaiChat = new OpenAIChat(config.apiUrl, containerId, config.systemPrompt, config.agentId);
-            console.log('[OpenAIChat] Chat inicializado com sucesso com agente ID:', config.agentId);
-            console.log('[OpenAIChat] ========== INITIALIZATION COMPLETE ==========');
+            window.groqChat = new GroqChat(config.apiUrl, containerId, config.systemPrompt);
+            console.log('[GroqChat] Chat inicializado com sucesso');
+            console.log('[GroqChat] ========== INITIALIZATION COMPLETE ==========');
         } else {
-            console.error('[OpenAI] Container não encontrado:', containerId);
+            console.error('[Groq] Container não encontrado:', containerId);
         }
     } else {
         console.log('[ComTesta] Usando agente:', config?.type || 'não configurado');
-        console.error('[OpenAIChat] Configuração não é do tipo OpenAI!');
+        console.error('[GroqChat] Configuração não é do tipo Groq!');
     }
 });
 
 // Função para mostrar erro de configuração
 function showConfigurationError() {
-    const container = document.getElementById('openai-chat-container');
+    const container = document.getElementById('groq-chat-container');
     if (container) {
         container.innerHTML = `
-            <div class="openai-config-error">
+            <div class="groq-config-error">
                 <div class="error-icon">⚠️</div>
                 <h3>Configuração Necessária</h3>
-                <p>Para usar o Agente ComTesta com OpenAI, você precisa configurar a chave de API no arquivo <code>.env</code>.</p>
+                <p>Para usar o Agente ComTesta com Groq (LLaMA), você precisa configurar a chave de API no arquivo <code>.env</code>.</p>
                 <div class="error-steps">
                     <h4>Passos para configurar:</h4>
                     <ol>
-                        <li>Acesse <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a></li>
+                        <li>Acesse o painel da Groq e gere sua chave</li>
                         <li>Crie/acesse sua conta</li>
                         <li>Gere uma chave de API</li>
-                        <li>Adicione a chave no arquivo <code>.env</code> (campo OPENAI_API_KEY)</li>
-                        <li>Verifique que o OPENAI_AGENT_ID está configurado</li>
+                        <li>Adicione a chave no arquivo <code>.env</code> (campo GROQ_API_KEY)</li>
                         <li>Inicie o servidor com <code>./start-server.sh</code></li>
                         <li>Recarregue esta página</li>
                     </ol>

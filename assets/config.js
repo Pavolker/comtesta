@@ -1,19 +1,18 @@
 /**
- * Configuração do Agente ComTesta com OpenAI Agent Builder
- * VERSÃO: 2.0 - Sem Gemini
+ * Configuração do Agente ComTesta com Groq (LLaMA)
+ * VERSÃO: 3.0 - Groq
  */
 
-console.log('[Config] Carregando configuração OpenAI...');
+console.log('[Config] Carregando configuração Groq...');
 console.log('[Config] Data:', new Date().toISOString());
 
 const COMTESTA_CONFIG = {
-    // Agente padrão: OpenAI APENAS
-    AGENT_TYPE: 'openai',
-    VERSION: '2.0',
+    // Agente padrão: Groq (LLaMA)
+    AGENT_TYPE: 'groq',
+    VERSION: '3.0',
 
-    // Configuração do OpenAI Agent Builder
-    OPENAI: {
-        AGENT_ID: 'wf_6909de0fcfbc819095e663e7ede813ff0967f46f744c61c5',
+    // Configuração do Groq (compatível com o padrão OpenAI)
+    GROQ: {
         API_URL: '/api/openai'
     },
 
@@ -57,12 +56,11 @@ Regras importantes:
 - NÃO concorde ou discorde - apenas analise`
 };
 
-// Função para obter a configuração atual - SEMPRE retorna OpenAI
+// Função para obter a configuração atual - SEMPRE retorna Groq
 function getAgentConfig() {
     return {
-        type: 'openai',
-        apiUrl: COMTESTA_CONFIG.OPENAI.API_URL,
-        agentId: COMTESTA_CONFIG.OPENAI.AGENT_ID,
+        type: 'groq',
+        apiUrl: COMTESTA_CONFIG.GROQ.API_URL,
         systemPrompt: COMTESTA_CONFIG.SYSTEM_PROMPT
     };
 }
@@ -70,8 +68,8 @@ function getAgentConfig() {
 // Validação da configuração
 function validateConfig() {
     const config = getAgentConfig();
-    if (!config.apiUrl || !config.agentId) {
-        console.warn('[ComTesta] ⚠️ Endpoint do OpenAI ou Agent ID não configurado!');
+    if (!config.apiUrl) {
+        console.warn('[ComTesta] ⚠️ Endpoint do Groq não configurado!');
         return false;
     }
     return true;
@@ -83,5 +81,4 @@ window.getAgentConfig = getAgentConfig;
 window.validateConfig = validateConfig;
 
 // Log de validação
-console.log('[Config] COMTESTA_CONFIG.OPENAI.AGENT_ID:', COMTESTA_CONFIG.OPENAI.AGENT_ID);
 console.log('[Config] getAgentConfig():', getAgentConfig());

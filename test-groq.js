@@ -31,18 +31,18 @@ function loadEnv() {
 
 loadEnv();
 
-const apiKey = process.env.OPENAI_API_KEY;
+const apiKey = process.env.GROQ_API_KEY;
 
 if (!apiKey) {
-  console.error('OPENAI_API_KEY não encontrada no .env');
+  console.error('GROQ_API_KEY não encontrada no .env');
   process.exit(1);
 }
 
-console.log('Testando chave OpenAI...');
+console.log('Testando chave Groq...');
 
 const options = {
-  hostname: 'api.openai.com',
-  path: '/v1/models',
+  hostname: 'api.groq.com',
+  path: '/openai/v1/models',
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${apiKey}`,

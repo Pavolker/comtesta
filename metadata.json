@@ -1,5 +1,5 @@
 {
   "name": "ComTesta - Agente Pensante de Feedback",
-  "description": "Static multi-page experience for ComTesta, incluindo landing page, agente OpenAI e dashboard que interpreta a resposta final do agente para exibir métricas epistemológicas.",
+  "description": "Static multi-page experience for ComTesta, incluindo landing page, agente Groq (LLaMA) e dashboard que interpreta a resposta final do agente para exibir métricas epistemológicas.",
   "requestFramePermissions": []
 }
