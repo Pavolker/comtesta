@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/openai"
+  to = "/.netlify/functions/groq"
+  status = 200
+  force = true
